@@ -10,6 +10,8 @@ namespace Trackbook.Network
 {
     internal static class Client
     {
+        private const string HOST = "https://trackbook.io/analytics/log";
+
         internal static RequestScheduler PostScheduler { get; set; }
 
         static Client()
@@ -110,7 +112,7 @@ namespace Trackbook.Network
             string result;
             try
             {
-                response = await HttpClient.PostAsync(Trackbook.Settings.host, content);
+                response = await HttpClient.PostAsync(HOST, content);
                 result = await response.Content.ReadAsStringAsync();
             }
             catch (Exception e)

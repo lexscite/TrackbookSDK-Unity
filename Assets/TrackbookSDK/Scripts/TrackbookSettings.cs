@@ -9,8 +9,6 @@ namespace Trackbook
         [SerializeField]
         public string apiKey;
         [SerializeField]
-        public string host;
-        [SerializeField]
         public string postScheduleFileName;
     }
 }

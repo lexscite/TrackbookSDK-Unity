@@ -6,7 +6,10 @@ using Newtonsoft.Json.Linq;
 #if UNITY_IOS
 using Newtonsoft.Json;
 using Trackbook.Network;
-using Trackbook.Network.Data;
+#endif
+
+#if UNITY_PURCHASING
+using UnityEngine.Purchasing;
 #endif
 
 namespace Trackbook
@@ -24,7 +27,7 @@ namespace Trackbook
         {
             get
             {
-                return Resources.Load<TrackbookSettings>("FakesbookSDKSettings");
+                return Resources.Load<TrackbookSettings>("TrackbookSettings");
             }
         }
 
@@ -40,14 +43,30 @@ namespace Trackbook
             }
         }
 
-        public static void LogPurchase(FakesbookData data)
+#if UNITY_PURCHASING
+        public static void LogPurchase(Product product, string userId = "")
+        {
+            var json = JObject.Parse(product.receipt);
+
+            var transactionId = json["TransactionID"].ToString();
+            var receiptData = json["Payload"].ToString();
+
+            LogPurchase(transactionId,
+                receiptData,
+                product.definition.id,
+                product.metadata.localizedTitle,
+                product.metadata.localizedPrice,
+                product.metadata.isoCurrencyCode,
+                userId);
+        }
+#endif
+
+        public static void LogPurchase(TrackbookData data)
         {
             LogPurchase(data.transactionId,
-                data.payload,
+                data.receiptData,
                 data.productId,
-                data.productQuantity,
                 data.productTitle,
-                data.productDescription,
                 data.valueToSum,
                 data.currency,
                 data.userId);
@@ -58,35 +77,10 @@ namespace Trackbook
             Client.PostScheduler.Execute();
         }
 
-        // Use with UnityIAP Product.receipt
-        public static void LogPurchase(string receipt,
-            string productId,
-            double productQuantity,
-            string productTitle,
-            string productDescription,
-            decimal valueToSum,
-            string currency,
-            string userId = "")
-        {
-            var json = JObject.Parse(receipt);
-
-            LogPurchase(json["TransactionID"].ToString(),
-                json["Payload"].ToString(),
-                productId,
-                productQuantity,
-                productTitle,
-                productDescription,
-                valueToSum,
-                currency,
-                userId);
-        }
-
         public static void LogPurchase(string transactionId,
-            string payload,
+            string receiptData,
             string productId,
-            double productQuantity,
             string productTitle,
-            string productDescription,
             decimal valueToSum,
             string currency,
             string userId = "")
@@ -96,21 +90,18 @@ namespace Trackbook
             {
                 if (IsInitialized)
                 {
-                    Log($"Logging: TransactionId={transactionId} | Payload={payload} | ProductId={productId} | ProductQuantity={productQuantity} | ProductTitle={productTitle} | ProductDescription={productDescription} | ValueToSum={valueToSum} | Currency={currency} | UserId={userId}");
+                    Log($"Logging: TransactionId={transactionId} | Payload={receiptData} | ProductId={productId} |  ProductTitle={productTitle}  | ValueToSum={valueToSum} | Currency={currency} | UserId={userId}");
 
-                    var data = new FacebookPurchaseData(transactionId,
-                        payload,
+                    var data = new LogData(transactionId,
+                        receiptData,
                         productId,
-                        productQuantity,
                         productTitle,
-                        productDescription,
                         valueToSum,
                         currency,
                         userId);
                     var requestContents = JsonConvert.SerializeObject(data);
 
                     Log($"Contents serialized: {requestContents}");
-
                     Client.Schedule(requestContents);
                 }
                 else
@@ -136,13 +127,9 @@ namespace Trackbook
         {
             AdvertiserId = id;
             IsTrackingEnabled = isTrackingEnabled;
-
             Log("Advertiser ID requested");
-
             IsInitialized = true;
-
-            Log($"Initialized | Host: {Settings.host} | Post schedule file name: {Settings.postScheduleFileName}");
-
+            Log($"Initialized | Post schedule file name: {Settings.postScheduleFileName} | App ID: {Settings.appId} | API Key: {Settings.apiKey}");
             OnInitialized.Invoke();
         }
 
