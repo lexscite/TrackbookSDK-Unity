@@ -7,7 +7,7 @@ namespace Trackbook
         [SerializeField]
         public string appId;
         [SerializeField]
-        public string secret;
+        public string apiKey;
         [SerializeField]
         public string host;
         [SerializeField]

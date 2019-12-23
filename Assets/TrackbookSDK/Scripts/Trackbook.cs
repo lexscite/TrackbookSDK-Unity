@@ -53,6 +53,11 @@ namespace Trackbook
                 data.userId);
         }
 
+        public static void LogSchedule()
+        {
+            Client.PostScheduler.Execute();
+        }
+
         // Use with UnityIAP Product.receipt
         public static void LogPurchase(string receipt,
             string productId,
@@ -87,7 +92,7 @@ namespace Trackbook
             string userId = "")
         {
 #if UNITY_IOS
-            if (Application.isEditor)
+            if (!Application.isEditor)
             {
                 if (IsInitialized)
                 {
@@ -136,7 +141,7 @@ namespace Trackbook
 
             IsInitialized = true;
 
-            Log($"Initialized | Host: {Settings.host} | Post schedule file name: {Settings.postScheduleFileName} | Log in editor: {Settings.logInEditor}");
+            Log($"Initialized | Host: {Settings.host} | Post schedule file name: {Settings.postScheduleFileName}");
 
             OnInitialized.Invoke();
         }

@@ -13,42 +13,42 @@ namespace Trackbook.Network.Data
 {
     public class FacebookPurchaseData
     {
-        private class DataObject
+        public class DataObject
         {
-            protected class FacebookObject
+            public class FacebookObject
             {
                 [JsonProperty("bundleShortVersion")]
-                private string BundleShortVersion { get; set; }
+                protected string BundleShortVersion { get; set; }
                 [JsonProperty("user_id")]
-                private string UserId { get; set; }
+                protected string UserId { get; set; }
                 [JsonProperty("advertiser_id")]
-                private string AdvertiserId { get; set; }
+                protected string AdvertiserId { get; set; }
                 [JsonProperty("advertiser_tracking_enabled")]
-                private bool AdvertiserTrackingEnabled { get; set; }
+                protected bool AdvertiserTrackingEnabled { get; set; }
                 [JsonProperty("application_tracking_enabled")]
-                private bool ApplicationTrackingEnabled { get; set; }
+                protected bool ApplicationTrackingEnabled { get; set; }
                 [JsonProperty("productId")]
-                private string ProductId { get; set; }
+                protected string ProductId { get; set; }
                 [JsonProperty("productQuantity")]
-                private double ProductQuantity { get; set; }
+                protected double ProductQuantity { get; set; }
                 [JsonProperty("productTitle")]
-                private string ProductTitle { get; set; }
+                protected string ProductTitle { get; set; }
                 [JsonProperty("productDescription")]
-                private string ProductDescription { get; set; }
+                protected string ProductDescription { get; set; }
                 [JsonProperty("valueToSum")]
-                private decimal ValueToSum { get; set; }
+                protected decimal ValueToSum { get; set; }
                 [JsonProperty("logTime")]
-                private int LogTime { get; set; }
+                protected int LogTime { get; set; }
                 [JsonProperty("numItems")]
-                private int NumItems { get; set; } = 1;
+                protected int NumItems { get; set; } = 1;
                 [JsonProperty("currency")]
-                private string Currency { get; set; }
+                protected string Currency { get; set; }
                 [JsonProperty("transactionDate")]
-                private string TransactionDate { get; set; }
+                protected string TransactionDate { get; set; }
                 [JsonProperty("extinfo")]
-                private List<string> ExtInfo { get; set; }
+                protected List<string> ExtInfo { get; set; }
 
-                protected FacebookObject(string productId,
+                public FacebookObject(string productId,
                     double productQuantity,
                     string productTitle,
                     string productDescription,
@@ -68,7 +68,7 @@ namespace Trackbook.Network.Data
                     Currency = currency;
                 }
 
-                private void DetectCommonData()
+                protected void DetectCommonData()
                 {
                     LogTime = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
                     TransactionDate = DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss+ffff");
@@ -103,11 +103,11 @@ namespace Trackbook.Network.Data
             }
 
             [JsonProperty("receiptData")]
-            private JObject ReceiptData { get; set; }
+            protected JObject ReceiptData { get; set; }
             [JsonProperty("fb")]
-            private FacebookObject Facebook { get; set; }
+            protected FacebookObject Facebook { get; set; }
 
-            private DataObject(string transactionId,
+            public DataObject(string transactionId,
                 string payload,
                 string productId,
                 double productQuantity,
@@ -130,13 +130,13 @@ namespace Trackbook.Network.Data
         }
 
         [JsonProperty("platform")]
-        private string Platform { get; set; }
+        protected string Platform { get; set; }
         [JsonProperty("isSandbox")]
-        private bool IsSandbox { get; set; }
+        protected bool IsSandbox { get; set; }
         [JsonProperty("data")]
-        private DataObject Data { get; set; }
+        protected DataObject Data { get; set; }
 
-        internal FacebookPurchaseData(string transactionId,
+        public FacebookPurchaseData(string transactionId,
             string payload,
             string productId,
             double productQuantity,
@@ -157,28 +157,9 @@ namespace Trackbook.Network.Data
                 valueToSum,
                 currency,
                 userId);
-
-            Trackbook.Log($"FacebookPurchasedData: Platform={Platform}\n" +
-                $"IsSandbox = {IsSandbox}\n" +
-                $"ReceiptData={Data.ReceiptData}\n" +
-                $"BundleShortVersion={Data.Facebook.BundleShortVersion}\n" +
-                $"UserId={Data.Facebook.UserId}\n" +
-                $"AdvertiserId={Data.Facebook.AdvertiserId}\n" +
-                $"AdvertiserTrackingEnabled={Data.Facebook.AdvertiserTrackingEnabled}\n" +
-                $"ApplicationTrackingEnabled={Data.Facebook.ApplicationTrackingEnabled}\n" +
-                $"ProductId={Data.Facebook.ProductId}\n" +
-                $"ProductQuantity={Data.Facebook.ProductQuantity}\n" +
-                $"ProductTitle={Data.Facebook.ProductTitle}\n" +
-                $"ProductDescription={Data.Facebook.ProductDescription}\n" +
-                $"ValueToSum={Data.Facebook.ValueToSum}\n" +
-                $"LogTime={Data.Facebook.LogTime}\n" +
-                $"NumItems={Data.Facebook.NumItems}\n" +
-                $"Currency={Data.Facebook.Currency}\n" +
-                $"TransactionDate={Data.Facebook.TransactionDate}\n" +
-                $"ExtInfo={Data.Facebook.ExtInfo}");
         }
 
-        private void DetectPlatform()
+        protected void DetectPlatform()
         {
             var platform = "unsupported";
             if (Application.isEditor)

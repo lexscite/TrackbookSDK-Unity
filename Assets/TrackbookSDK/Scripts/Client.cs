@@ -26,6 +26,7 @@ namespace Trackbook.Network
                 {
                     _httpClient = new HttpClient();
                     _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
+                    _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", $"{Trackbook.Settings.appId}:{Trackbook.Settings.apiKey}");
                 }
 
                 return _httpClient;
